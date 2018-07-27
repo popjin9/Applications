@@ -31,8 +31,6 @@ echo ("
 <p>The use of this sort of filtering is that it provides a quick and easy way to analyse and categorise sites based on their content, and requires minimum human intervention. Below, is some filler text to bypass this filtering.</p>
 <br>
 
-<a href='./index2.php'>Click HERE for MSC Bypass system</a><br>
-
 <h4>What is Censorship?</h4>
 
 <p>Censorship is when an authority (such as a government or religion) cuts out or suppresses communication.
@@ -117,7 +115,7 @@ foreach($requiredExtensions as $requiredExtension) {
 //Returns a regex that matches all HTTP[S] URLs for a given hostname.
 function getHostnamePattern($hostname) {
   $escapedHostname = str_replace(".", "\.", $hostname);
-  return "@^https?://([a-z0-9-]+\.)*" . $escapedHostname . "@i";
+  return "@^http?://([a-z0-9-]+\.)*" . $escapedHostname . "@i";
 }
 //Helper function used to removes/unset keys from an associative array using case insensitive matching
 function removeKeys(&$assoc, $keys2remove) {
@@ -149,12 +147,12 @@ if (!function_exists("getallheaders")) {
     return $result;
   }
 }
-$usingDefaultPort =  (!isset($_SERVER["HTTPS"]) && $_SERVER["SERVER_PORT"] === 80) || (isset($_SERVER["HTTPS"]) && $_SERVER["SERVER_PORT"] === 443);
+$usingDefaultPort =  (!isset($_SERVER["HTTP"]) && $_SERVER["SERVER_PORT"] === 80) || (isset($_SERVER["HTTP"]) && $_SERVER["SERVER_PORT"] === 443);
 $prefixPort = $usingDefaultPort ? "" : ":" . $_SERVER["SERVER_PORT"];
 //Use HTTP_HOST to support client-configured DNS (instead of SERVER_NAME), but remove the port if one is present
 $prefixHost = $_SERVER["HTTP_HOST"];
 $prefixHost = strpos($prefixHost, ":") ? implode(":", explode(":", $_SERVER["HTTP_HOST"], -1)) : $prefixHost;
-define("PROXY_PREFIX", "http" . (isset($_SERVER["HTTPS"]) ? "s" : "") . "://" . $prefixHost . $prefixPort . $_SERVER["SCRIPT_NAME"] . "?");
+define("PROXY_PREFIX", "http" . (isset($_SERVER["HTTP"]) ? "s" : "") . "://" . $prefixHost . $prefixPort . $_SERVER["SCRIPT_NAME"] . "?");
 //Makes an HTTP request via cURL, using request data that was passed directly to this script.
 function makeRequest($url) {
   global $anonymize;
@@ -335,8 +333,6 @@ if (empty($scheme)) {
   if (strpos($url, "//") === 0) {
     $url = "http:" . $url;
   }
-} else if (!preg_match("/^https?$/i", $scheme)) {
-    die('Error: Detected a "' . $scheme . '" URL. Please use http[s] URLs.');
 }
 //Validate the requested URL against the whitelist.
 $urlIsValid = count($whitelistPatterns) === 0;
